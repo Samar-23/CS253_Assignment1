@@ -96,6 +96,15 @@ class book_db{
             cout<<"Book added."<<endl;
         }
 
+        void delete_user_from_map(string id){
+            trav(data,i){
+                if(i->second==id){
+                    data.erase(i->first);
+                    return;
+                }
+            }
+        }
+
         void del(){
             cout<<"Find the book you want to delete."<<endl;
             display_b();
@@ -105,6 +114,7 @@ class book_db{
             trav(books, i){
                 if ((*i).isbn == isbn){
                     books.erase(i);
+                    data.erase(isbn);
                     cout<<"Book deleted."<<endl;
                     return;
                 }
@@ -129,7 +139,7 @@ class book_db{
             cin>>publication1;
             trav(books, i){
                 if ((*i).isbn == isbn){
-                    if (search(title1,author1,isbn,publication1)){
+                    if (search(title1,author1,isbn1,publication1)){
                         cout<<"Book already present in library."<<endl;
                         return;
                     }
@@ -137,11 +147,15 @@ class book_db{
                     (*i).author == author1;
                     (*i).isbn == isbn1;
                     (*i).publication = publication1;
+                    if(isbn!=isbn1){
+                        data[isbn1]=data[isbn];
+                        data.erase(isbn);
+                    }
                     cout<<"Book details updated successfully"<<endl;
                     return;
                 }
             }
-        }
+        }       
 
 };
 
@@ -181,7 +195,7 @@ class user_db{
             trav(users,i){
                 if ((*i).id==id){
                     if(search(id1)){
-                        cout<<"Can't update details, since user with same id is already present."<<endl;
+                        cout<<"Can't update details, since a user with id same as this id is already present."<<endl;
                         return;
                     }
                     (*i).name=name1;
@@ -357,7 +371,7 @@ class librarian : public user{
         void add_user(user_db &database,prof_db &profdb,student_db &studentdb){
             registration(database,profdb,studentdb);
         }
-        void delete_user(user_db& userdb,prof_db &profdb,student_db &studentdb){
+        void delete_user(user_db& userdb,prof_db &profdb,student_db &studentdb, book_db &bookdb){
             cout<<"Find the user you want to delete."<<endl;
             userdb.display_u();
             string id;
@@ -366,8 +380,9 @@ class librarian : public user{
             userdb.del(id);
             profdb.del(id);
             studentdb.del(id);
+            bookdb.delete_user_from_map(id);
         }
-        void update_user(user_db& userdb,prof_db &profdb,student_db &studentdb){
+        void update_user(user_db& userdb,prof_db &profdb,student_db &studentdb, book_db &bookdb){
             cout<<"Find the user you want to update."<<endl;
             userdb.display_u();
             string id,name1,id1,password1,category;
@@ -382,14 +397,19 @@ class librarian : public user{
             cout<<"New category (STUDENT or PROFESSOR): ";
             cin>>category;
             userdb.update(id,name1,id1,password1,category);
-            studentdb.del(id);
             profdb.del(id);
-            if(category=="PROFESSOR"){
-                profdb.add(name1,id1,password1);
-            }
+            studentdb.del(id);
             if(category=="STUDENT"){
                 studentdb.add(name1,id1,password1);
             }
+            if(category=="PROFESSOR"){
+                profdb.add(name1,id1,password1);
+            }
+            if(id1!=id){
+                bookdb.delete_user_from_map(id);
+                bookdb.data[id1]=bookdb.data[id];
+            }
+
         }
         void display_b(book_db& bookdb){
             bookdb.display_b();
@@ -568,6 +588,8 @@ void student_attributes(student &s, user_db &database,prof_db &profdb,student_db
             s.display_list();
             break;
         case 3:
+            cout<<"Find the book of your choice."<<endl;
+            s.display_b(bookdb);
             cout<<"Title of book : ";
             cin>>title;
             cout<<"Author of book : ";
@@ -575,6 +597,8 @@ void student_attributes(student &s, user_db &database,prof_db &profdb,student_db
             s.issue(title,author,bookdb);
             break;
         case 4:
+            cout<<"Find the book of your choice."<<endl;
+            s.display_b(bookdb);
             cout<<"Title of book : ";
             cin>>title;
             cout<<"Author of book : ";
@@ -614,6 +638,8 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
             p.display_list();
             break;
         case 3:
+            cout<<"Find the book of your choice."<<endl;
+            p.display_b(bookdb);
             cout<<"Title of book : ";
             cin>>title;
             cout<<"Author of book : ";
@@ -621,6 +647,8 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
             p.issue(title,author,bookdb);
             break;
         case 4:
+            cout<<"Find the book of your choice."<<endl;
+            p.display_b(bookdb);
             cout<<"Title of book : ";
             cin>>title;
             cout<<"Author of book : ";
@@ -671,10 +699,10 @@ void librarian_attributes(librarian &l, user_db &database,prof_db &profdb,studen
             l.add_user(database,profdb,studentdb);
             break;
         case 5:
-            l.update_user(database,profdb,studentdb);
+            l.update_user(database,profdb,studentdb,bookdb);
             break;
         case 6:
-            l.delete_user(database,profdb,studentdb);
+            l.delete_user(database,profdb,studentdb,bookdb);
             break;
         case 7:
             l.display_b(bookdb);

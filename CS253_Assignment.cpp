@@ -778,12 +778,13 @@ void registration_lib(user_db &database,prof_db &profdb,student_db &studentdb,li
         return;
     }
     cout<<"1. Register as Librarian"<<endl;
-    cout<<"2. Exit"<<endl;
+    cout<<"2. Exit this page"<<endl;
     cout<<"Write the number of your choice, according to the above list. For example, 1 for registration."<<endl;
     int num;
     cin>>num;
     switch(num){
         case 2:
+            home(database,profdb,studentdb,librariandb,bookdb);
             return;
         case 1:
             cout<<"Enter Security Pin (you need to type 1111, this feature was added just for some confidentiality): ";

@@ -314,8 +314,8 @@ class prof : public user{
             Date curr=(*d);
             int amount=0;
             trav(list,i){
-                if(diff(i->issue_date,curr)>30){
-                    amount+=((diff(i->issue_date,curr)-30)*5);
+                if(diff(i->issue_date,curr)>60){
+                    amount+=((diff(i->issue_date,curr)-60)*5);
                 }
             }
             fine=amount;
@@ -337,7 +337,7 @@ class prof : public user{
             d->y=year;
             Date curr=(*d);
             trav(list,i){
-                if(diff(i->issue_date,curr)>30){
+                if(diff(i->issue_date,curr)>60){
                     i->issue_date.d=0;
                     i->issue_date.m=0;
                     i->issue_date.y=0;
@@ -370,8 +370,8 @@ class prof : public user{
             Date curr=(*d);
             trav(list,i){
                 if(i->isbn==isbn){
-                    if(diff(i->issue_date,curr)>30){
-                        fine-=((diff(i->issue_date,curr)-30)*5);
+                    if(diff(i->issue_date,curr)>60){
+                        fine-=((diff(i->issue_date,curr)-60)*5);
                     }
                     i->issue_date.d=0;
                     i->issue_date.m=0;

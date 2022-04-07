@@ -25,6 +25,41 @@ typedef vector<pi> vpi;
 #define in(arr,z) for(ll i=0; i<z; i++) cin>>arr[i]
 #define out(arr,z) for(ll i=0; i<z; i++) cout<<arr[i]<<' '
 
+int ceil(int a,int b){
+    if(a%b==0)
+        return (a/b);
+    return (a/b)+1;
+}
+
+class Date{
+    public:
+        int d, m, y;
+        ll count_leap(){
+            ll year=y;
+            if(m<=2)
+                year--;
+            return year/4 - year/100 + year/400;
+        }
+
+
+};
+
+const int monthDays[12]
+    = { 31, 28, 31, 30, 31, 30,
+       31, 31, 30, 31, 30, 31 };
+ 
+ll diff(Date dt1, Date dt2){
+    ll n1 = dt1.y * 365 + dt1.d;
+    fl(i,0,dt1.m)
+        n1 += monthDays[i];
+    n1 += dt1.count_leap();
+    ll n2 = dt2.y * 365 + dt2.d;
+    fl(i,0,dt2.m)
+        n2 += monthDays[i];
+    n2 += dt2.count_leap();
+    return n2 - n1;
+}
+
 class user{
     public:
         string name;
@@ -47,116 +82,16 @@ class book{
         string author;
         string isbn;
         string publication;
-        int fine;
+        Date issue_date;
         book(string title, string author, string isbn, string publication){
             this->title=title;
             this->author=author;
             this->isbn=isbn;
             this->publication=publication;
-            this->fine=0;
+            this->issue_date.d=0;
+            this->issue_date.m=0;
+            this->issue_date.y=0;
         }
-};
-
-class book_db{
-    public:
-        vector<book> books;
-        map<string,string> data;
-        void display_b(){
-            int count=1;
-            trav(books, i){
-                cout << count << ". " << "Title: " << (*i).title << "   Author: " << (*i).author << "   ISBN: " << (*i).isbn << "   Publication: " << (*i).publication << endl;
-                count++;
-            }
-        }
-
-        int search(string title, string author, string isbn, string publication){
-            trav(books, i){
-                if ((*i).title == title && (*i).author == author && (*i).isbn == isbn && (*i).publication == publication)
-                    return 1;
-            }
-            return 0;
-        }
-
-        void add(){
-            string title, author, isbn, publication;
-            cout<<"Enter book title: ";
-            cin>>title;
-            cout<<"Enter author's name: ";
-            cin>>author;
-            cout<<"Enter isbn: ";
-            cin>>isbn;
-            cout<<"Enter publication name: ";
-            cin>>publication;
-            if (search(title,author,isbn,publication)){
-                cout<<"Book already present in library."<<endl;
-                return;
-            }
-            book* b=new book(title,author,isbn,publication);
-            books.pb(*b);
-            cout<<"Book added."<<endl;
-        }
-
-        void delete_user_from_map(string id){
-            trav(data,i){
-                if(i->second==id){
-                    data.erase(i->first);
-                    return;
-                }
-            }
-        }
-
-        void del(){
-            cout<<"Find the book you want to delete."<<endl;
-            display_b();
-            string isbn;
-            cout<<"Enter isbn: ";
-            cin>>isbn;
-            trav(books, i){
-                if ((*i).isbn == isbn){
-                    books.erase(i);
-                    data.erase(isbn);
-                    cout<<"Book deleted."<<endl;
-                    return;
-                }
-            }
-            cout<<"Book was not in the database."<<endl;
-        }
-
-        void update(){
-            cout<<"Find the book you want to update."<<endl;
-            display_b();
-            string isbn;
-            cout<<"Enter current isbn: ";
-            cin>>isbn;
-            string title1, author1,isbn1,publication1;
-            cout<<"New title: ";
-            cin>>title1;
-            cout<<"New author name: ";
-            cin>>author1;
-            cout<<"New isbn: ";
-            cin>>isbn1;
-            cout<<"New publication: ";
-            cin>>publication1;
-            trav(books, i){
-                if ((*i).isbn == isbn){
-                    if (search(title1,author1,isbn1,publication1)){
-                        cout<<"Book already present in library."<<endl;
-                        return;
-                    }
-                    (*i).title == title1;
-                    (*i).author == author1;
-                    (*i).isbn == isbn1;
-                    (*i).publication = publication1;
-                    if(isbn!=isbn1){
-                        data[isbn1]=data[isbn];
-                        data.erase(isbn);
-                    }
-                    cout<<"Book details updated successfully"<<endl;
-                    return;
-                }
-            }
-        }       
-
 };
 
 class user_db{
@@ -191,15 +126,10 @@ class user_db{
             cout<<"User not present in database"<<endl;
         }
 
-        void update(string id, string name1, string id1, string password1, string category){
+        void update(string id, string name1, string password1, string category){
             trav(users,i){
                 if ((*i).id==id){
-                    if(search(id1)){
-                        cout<<"Can't update details, since a user with id same as this id is already present."<<endl;
-                        return;
-                    }
                     (*i).name=name1;
-                    (*i).id=id1;
                     (*i).password=password1;
                     (*i).category=category;
                 }
@@ -216,8 +146,107 @@ class user_db{
 
 };
 
+class book_db{
+    public:
+        vector<book> books;
+        map<string,string> data;
+        void display_b(){
+            int count=1;
+            trav(books, i){
+                cout << count << ". " << "Title: " << (*i).title << "   Author: " << (*i).author << "   ISBN: " << (*i).isbn << "   Publication: " << (*i).publication << endl;
+                count++;
+            }
+        }
+
+        int search(string isbn){
+            trav(books, i){
+                if ((*i).isbn == isbn)
+                    return 1;
+            }
+            return 0;
+        }
+
+        void add(){
+            string title, author, isbn, publication;
+            cout<<"Enter book title: (use _ instead of space for separation) ";
+            cin>>title;
+            cout<<"Enter author's name (use _ instead of space for separation): ";
+            cin>>author;
+            cout<<"Enter isbn (use _ instead of space for separation): ";
+            cin>>isbn;
+            cout<<"Enter publication name (use _ instead of space for separation): ";
+            cin>>publication;
+            if (search(isbn)){
+                cout<<"Book already present in library."<<endl;
+                return;
+            }
+            book* b=new book(title,author,isbn,publication);
+            books.pb(*b);
+            cout<<"Book added."<<endl;
+        }
+
+        void delete_user_from_map(string id){
+            trav(data,i){
+                if(i->second==id){
+                    data.erase(i->first);
+                    trav(books,j){
+                        if(j->isbn==i->first){
+                            j->issue_date.d=0;
+                            j->issue_date.m=0;
+                            j->issue_date.y=0;
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
+        void del(){
+            cout<<"Find the book you want to delete."<<endl;
+            display_b();
+            string isbn;
+            cout<<"Enter isbn (use _ instead of space for separation): ";
+            cin>>isbn;
+            trav(books, i){
+                if ((*i).isbn == isbn){
+                    books.erase(i);
+                    data.erase(isbn);
+                    cout<<"Book deleted."<<endl;
+                    return;
+                }
+            }
+            cout<<"Book was not in the database."<<endl;
+        }
+
+        void update(){
+            cout<<"Find the book you want to update."<<endl;
+            display_b();
+            string isbn;
+            cout<<"Enter isbn (use _ instead of space for separation): ";
+            cin>>isbn;
+            string title1,author1,publication1;
+            cout<<"New title (use _ instead of space for separation): ";
+            cin>>title1;
+            cout<<"New author name (use _ instead of space for separation): ";
+            cin>>author1;
+            cout<<"New publication (use _ instead of space for separation): ";
+            cin>>publication1;
+            trav(books, i){
+                if ((*i).isbn == isbn){
+                    (*i).title == title1;
+                    (*i).author == author1;
+                    (*i).publication = publication1;
+                    cout<<"Book details updated successfully"<<endl;
+                    return;
+                }
+            }
+        }       
+
+};
+
 class prof : public user{
     public:
+        int fine;
         void display_b(book_db& bookdb){
             int count=1;
             trav(bookdb.books, i){
@@ -225,35 +254,143 @@ class prof : public user{
                 count++;
             }
         }
-        prof(string name,string id,string password,string category):user(name,id,password,category){}
+        prof(string name,string id,string password,string category):user(name,id,password,category){
+            this->fine=0;
+        }
         vector<book> list;
         void display_list(){
             int count=1;
             trav(list,i){
                 cout << count << ". " << "Title: " << (*i).title << "   Author: " << (*i).author << "   ISBN: " << (*i).isbn << "   Publication: " << (*i).publication << endl;
+                count++;
             }
         }
-        void issue(string title, string author, book_db& database){
+        void issue(string isbn, book_db& database){
             trav(database.books,i){
-                if((*i).title == title && (*i).author == author && !f(database.data,i->isbn)){
+                if(i->isbn==isbn && !f(database.data,i->isbn)){
+                   
+                    count++;
+                    cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+                    int date,month,year;
+                    cout<<"Date (DD format): ";
+                    cin>>date;
+                    cout<<"Month (MM format): ";
+                    cin>>month;
+                    cout<<"Year (YYYY format): ";
+                    cin>>year;
+                    Date* d=new Date;
+                    d->d=date;
+                    d->m=month;
+                    d->y=year;
+                    i->issue_date=(*d);
                     list.pb(*i);
                     database.data[(*i).isbn]=id;
-                    count++;
+                    cout<<"Issued successfully."<<endl;
+                    return;
                 }
             }
         }
-        int issuable(string title, string author, book_db& database){
+        int issuable(string isbn, book_db& database){
             trav(database.books,i){
-                if((*i).title == title && (*i).author == author && !f(database.data,i->isbn)){
+                if(i->isbn==isbn && !f(database.data,i->isbn)){
                     return 1;
                 }
             }
             return 0;
         }
+        void calculate_fine(){
+            cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+            int date,month,year;
+            cout<<"Date (DD format): ";
+            cin>>date;
+            cout<<"Month (MM format): ";
+            cin>>month;
+            cout<<"Year (YYYY format): ";
+            cin>>year;
+            Date* d=new Date;
+            d->d=date;
+            d->m=month;
+            d->y=year;
+            Date curr=(*d);
+            int amount=0;
+            trav(list,i){
+                if(diff(i->issue_date,curr)>30){
+                    amount+=((diff(i->issue_date,curr)-30)*5);
+                }
+            }
+            fine=amount;
+            cout<<"Total fine is Rs "<<fine<<endl;
+        }
+        void clear_fine_amount(book_db &bookdb){
+            fine=0;
+            cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+            int date,month,year;
+            cout<<"Date (DD format): ";
+            cin>>date;
+            cout<<"Month (MM format): ";
+            cin>>month;
+            cout<<"Year (YYYY format): ";
+            cin>>year;
+            Date* d=new Date;
+            d->d=date;
+            d->m=month;
+            d->y=year;
+            Date curr=(*d);
+            trav(list,i){
+                if(diff(i->issue_date,curr)>30){
+                    i->issue_date.d=0;
+                    i->issue_date.m=0;
+                    i->issue_date.y=0;
+                    list.erase(i);
+                    bookdb.data.erase(i->isbn);
+                    break;
+                }
+            }
+            cout<<"Amount cleared"<<endl;
+        }
+
+        void return_book(book_db &bookdb){
+            string isbn;
+            cout<<"Check the book you want to return."<<endl;
+            display_list();
+            cout<<"Enter book isbn: ";
+            cin>>isbn;
+            cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+            int date,month,year;
+            cout<<"Date (DD format): ";
+            cin>>date;
+            cout<<"Month (MM format): ";
+            cin>>month;
+            cout<<"Year (YYYY format): ";
+            cin>>year;
+            Date* d=new Date;
+            d->d=date;
+            d->m=month;
+            d->y=year;
+            Date curr=(*d);
+            trav(list,i){
+                if(i->isbn==isbn){
+                    if(diff(i->issue_date,curr)>30){
+                        fine-=((diff(i->issue_date,curr)-30)*5);
+                    }
+                    i->issue_date.d=0;
+                    i->issue_date.m=0;
+                    i->issue_date.y=0;
+                    list.erase(i);
+                    bookdb.data.erase(i->isbn);
+                    cout<<"Book returned successfully."<<endl;
+                    break;
+                }
+            }
+
+        }
+
+        
 };
 
 class student : public user{
     public:
+        int fine;
         void display_b(book_db& bookdb){
             int count=1;
             trav(bookdb.books, i){
@@ -266,36 +403,140 @@ class student : public user{
             int count=1;
             trav(list,i){
                 cout << count << ". " << "Title: " << (*i).title << "   Author: " << (*i).author << "   ISBN: " << (*i).isbn << "   Publication: " << (*i).publication << endl;
+                count++;
             }
         }
-        student(string name,string id,string password,string category):user(name,id,password,category){}
+        student(string name,string id,string password,string category):user(name,id,password,category){
+            this->fine=0;
+        }
         void limit(){
             cout<< "You can issue only 5 books at max!"<<endl;
         }
 
-        void issue(string title, string author, book_db& database){
+        void issue(string isbn, book_db& database){
             trav(database.books,i){
-                if((*i).title == title && (*i).author == author && !f(database.data,i->isbn)){
+                if(i->isbn==isbn && !f(database.data,i->isbn)){
                     if(count>=5){
                         limit();
                         return;
                     }
+                    
+                    count++;
+                    cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+                    int date,month,year;
+                    cout<<"Date (DD format): ";
+                    cin>>date;
+                    cout<<"Month (MM format): ";
+                    cin>>month;
+                    cout<<"Year (YYYY format): ";
+                    cin>>year;
+                    Date* d=new Date;
+                    d->d=date;
+                    d->m=month;
+                    d->y=year;
+                    i->issue_date=(*d);
                     list.pb(*i);
                     database.data[(*i).isbn]=id;
-                    count++;
+                    cout<<"Issued successfully."<<endl;
+                    return;
                 }
             }
         }
 
-        int issuable(string title, string author, book_db& database){
+        int issuable(string isbn, book_db& database){
             trav(database.books,i){
-                if((*i).title == title && (*i).author == author && !f(database.data,i->isbn)){
+                if(i->isbn==isbn && !f(database.data,i->isbn)){
                     return 1;
                 }
             }
             return 0;
         }
-    
+        void calculate_fine(){
+            cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+            int date,month,year;
+            cout<<"Date (DD format): ";
+            cin>>date;
+            cout<<"Month (MM format): ";
+            cin>>month;
+            cout<<"Year (YYYY format): ";
+            cin>>year;
+            Date* d=new Date;
+            d->d=date;
+            d->m=month;
+            d->y=year;
+            Date curr=(*d);
+            int amount=0;
+            trav(list,i){
+                if(diff(i->issue_date,curr)>30){
+                    amount+=((diff(i->issue_date,curr)-30)*2);
+                }
+            }
+            fine=amount;
+            cout<<"Total fine is Rs "<<fine<<endl;
+        }
+        void clear_fine_amount(book_db &bookdb){
+            fine=0;
+            cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+            int date,month,year;
+            cout<<"Date (DD format): ";
+            cin>>date;
+            cout<<"Month (MM format): ";
+            cin>>month;
+            cout<<"Year (YYYY format): ";
+            cin>>year;
+            Date* d=new Date;
+            d->d=date;
+            d->m=month;
+            d->y=year;
+            Date curr=(*d);
+            trav(list,i){
+                if(diff(i->issue_date,curr)>30){
+                    i->issue_date.d=0;
+                    i->issue_date.m=0;
+                    i->issue_date.y=0;
+                    list.erase(i);
+                    bookdb.data.erase(i->isbn);
+                    break;
+                }
+            }
+            cout<<"Amount cleared"<<endl;
+        }
+        void return_book(book_db &bookdb){
+            string isbn;
+            cout<<"Check the book you want to return."<<endl;
+            display_list();
+            cout<<"Enter book isbn: ";
+            cin>>isbn;
+            cout<<"Enter today's complete date,month and year in numerical form."<<endl;
+            int date,month,year;
+            cout<<"Date (DD format): ";
+            cin>>date;
+            cout<<"Month (MM format): ";
+            cin>>month;
+            cout<<"Year (YYYY format): ";
+            cin>>year;
+            Date* d=new Date;
+            d->d=date;
+            d->m=month;
+            d->y=year;
+            Date curr=(*d);
+            trav(list,i){
+                if(i->isbn==isbn){
+                    if(diff(i->issue_date,curr)>30){
+                        fine-=((diff(i->issue_date,curr)-30)*2);
+                    }
+                    i->issue_date.d=0;
+                    i->issue_date.m=0;
+                    i->issue_date.y=0;
+                    list.erase(i);
+                    bookdb.data.erase(i->isbn);
+                    cout<<"Book returned successfully."<<endl;
+                    break;
+                }
+            }
+
+        }
+        
 };
 
 class prof_db{
@@ -320,6 +561,7 @@ class prof_db{
             trav(profs,i){
                 if(i->id==id){
                     profs.erase(i);
+                    return;
                 }
             }
         }
@@ -348,6 +590,7 @@ class student_db{
             trav(students,i){
                 if(i->id==id){
                     students.erase(i);
+                    return;
                 }
             }
         }
@@ -375,7 +618,7 @@ class librarian : public user{
             cout<<"Find the user you want to delete."<<endl;
             userdb.display_u();
             string id;
-            cout<<"Enter id of the user to be deleted: ";
+            cout<<"Enter id of the user to be deleted (use _ instead of space for separation): ";
             cin>>id;
             userdb.del(id);
             profdb.del(id);
@@ -385,31 +628,27 @@ class librarian : public user{
         void update_user(user_db& userdb,prof_db &profdb,student_db &studentdb, book_db &bookdb){
             cout<<"Find the user you want to update."<<endl;
             userdb.display_u();
-            string id,name1,id1,password1,category;
-            cout<<"Enter current id of the user: ";
+            string id,name1,password1,category;
+            cout<<"Enter id of the user (use _ instead of space for separation): ";
             cin>>id;
-            cout<<"New name: ";
+            cout<<"New name (use _ instead of space for separation): ";
             cin>>name1;
-            cout<<"New id: ";
-            cin>>id1;
-            cout<<"New password: ";
+            cout<<"New password (use _ instead of space for separation): ";
             cin>>password1;
             cout<<"New category (STUDENT or PROFESSOR): ";
             cin>>category;
-            userdb.update(id,name1,id1,password1,category);
+            userdb.update(id,name1,password1,category);
             profdb.del(id);
             studentdb.del(id);
             if(category=="STUDENT"){
-                studentdb.add(name1,id1,password1);
+                studentdb.add(name1,id,password1);
+                
             }
             if(category=="PROFESSOR"){
-                profdb.add(name1,id1,password1);
+                profdb.add(name1,id,password1);
+                
             }
-            if(id1!=id){
-                bookdb.delete_user_from_map(id);
-                bookdb.data[id1]=bookdb.data[id];
-            }
-
+            cout<<"User updated successfully."<<endl;
         }
         void display_b(book_db& bookdb){
             bookdb.display_b();
@@ -451,7 +690,6 @@ class librarian : public user{
 };
 
 
-
 class librarian_db{
     public:
         vector<librarian> librarians;
@@ -476,18 +714,18 @@ void home(user_db& ,prof_db&,student_db &,librarian_db &,book_db&);
 
 void registration(user_db &database,prof_db &profdb,student_db &studentdb){
     string id,password1,password2,name;
-    cout<<"Name : ";
+    cout<<"Name (use _ instead of space for separation): ";
     cin>>name;
-    cout<<"ID : ";
+    cout<<"ID (use _ instead of space for separation): ";
     cin>>id;
     if(database.search(id)){
         cout<<endl<<"ID already exists. Try again."<<endl;
         registration(database,profdb,studentdb);
         return;
     }
-    cout<<"Password : ";
+    cout<<"Password (use _ instead of space for separation): ";
     cin>>password1;
-    cout<<"Confirm Password : ";
+    cout<<"Confirm Password (use _ instead of space for separation): ";
     cin>>password2;
     if(password1!=password2){
         cout<<endl<<"Passwords don't match. Try again."<<endl;
@@ -521,18 +759,18 @@ void registration(user_db &database,prof_db &profdb,student_db &studentdb){
 
 void registration_lib(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db &librariandb, book_db& bookdb){
     string id,password1,password2,name;
-    cout<<"Name : ";
+    cout<<"Name (use _ instead of space for separation): ";
     cin>>name;
-    cout<<"ID : ";
+    cout<<"ID (use _ instead of space for separation): ";
     cin>>id;
     if(database.search(id)){
         cout<<endl<<"ID already exists. Try again."<<endl;
         registration_lib(database,profdb,studentdb,librariandb,bookdb);
         return;
     }
-    cout<<"Password : ";
+    cout<<"Password (use _ instead of space for separation): ";
     cin>>password1;
-    cout<<"Confirm Password : ";
+    cout<<"Confirm Password (use _ instead of space for separation): ";
     cin>>password2;
     if(password1!=password2){
         cout<<endl<<"Passwords don't match. Try again."<<endl;
@@ -544,12 +782,11 @@ void registration_lib(user_db &database,prof_db &profdb,student_db &studentdb,li
     cout<<"Write the number of your choice, according to the above list. For example, 1 for registration."<<endl;
     int num;
     cin>>num;
-    cout<<endl;
     switch(num){
         case 2:
-            break;
+            return;
         case 1:
-            cout<<"Enter Security Pin (mandatory for librarian): ";
+            cout<<"Enter Security Pin (you need to type 1111, this feature was added just for some confidentiality): ";
             int n;
             cin>>n;
             if(n==1111){
@@ -570,15 +807,18 @@ void registration_lib(user_db &database,prof_db &profdb,student_db &studentdb,li
 
 void student_attributes(student &s, user_db &database,prof_db &profdb,student_db &studentdb,librarian_db &librariandb,book_db& bookdb){
     cout<<"Choose the number according to your requirement:"<<endl;
-    cout<<"1. "<<"Display all the books in library."<<endl;
-    cout<<"2. "<<"Display all the books issued by you."<<endl;
-    cout<<"3. "<<"Issue a book."<<endl;
-    cout<<"4. "<<"Book availability - Type book title and author name in capital letters (separated by newline)."<<endl;
-    cout<<"5. "<<"Logout"<<endl;
+    cout<<"1. Display all the books in library."<<endl;
+    cout<<"2. Display all the books issued by you."<<endl;
+    cout<<"3. Issue a book."<<endl;
+    cout<<"4. Book availability (using isbn)."<<endl;
+    cout<<"5. Return a book."<<endl;
+    cout<<"6. Calculate total fine imposed."<<endl;
+    cout<<"7. Clear all dues (fine) and return books with fine imposed."<<endl;
+    cout<<"8. "<<"Logout"<<endl;
     //cout<<"4. "<<"Total fine for all books issued currently."<<endl;
     //cout<<"1. "<<"."<<endl;
     int num;
-    string title,author;
+    string isbn;
     cin>>num;
     switch(num){
         case 1:
@@ -590,27 +830,33 @@ void student_attributes(student &s, user_db &database,prof_db &profdb,student_db
         case 3:
             cout<<"Find the book of your choice."<<endl;
             s.display_b(bookdb);
-            cout<<"Title of book : ";
-            cin>>title;
-            cout<<"Author of book : ";
-            cin>>author;
-            s.issue(title,author,bookdb);
+            cout<<"ISBN of book (use _ instead of space for separation): ";
+            cin>>isbn;
+            s.issue(isbn,bookdb);
             break;
         case 4:
             cout<<"Find the book of your choice."<<endl;
             s.display_b(bookdb);
-            cout<<"Title of book : ";
-            cin>>title;
-            cout<<"Author of book : ";
-            cin>>author;
-            if(s.issuable(title,author,bookdb)){
+            cout<<"ISBN of book (use _ instead of space for separation): ";
+            cin>>isbn;
+            if(s.issuable(isbn,bookdb)){
                 cout<<"Issuable."<<endl;
             }
             else
                 cout<<"Non-Issuable right now."<<endl;
             break;
         case 5:
+            s.return_book(bookdb);
+            break;
+        case 6:
+            s.calculate_fine();
+            break;
+        case 7:
+            s.clear_fine_amount(bookdb);
+            break;
+        case 8:
             home(database,profdb,studentdb,librariandb,bookdb);
+            return;
         default:
             cout<<"You had entered invalid number.";
             break;
@@ -623,12 +869,15 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
     cout<<"1. "<<"Display all the books in library."<<endl;
     cout<<"2. "<<"Display all the books issued by you."<<endl;
     cout<<"3. "<<"Issue a book."<<endl;
-    cout<<"4. "<<"Book availability - Type book title and author name in capital letters (separated by newline)."<<endl;
-    cout<<"5. "<<"Logout"<<endl;
+    cout<<"4. "<<"Book availability (using isbn)."<<endl;
+    cout<<"5. Return a book."<<endl;
+    cout<<"6. Calculate total fine imposed."<<endl;
+    cout<<"7. Clear all dues (fine)."<<endl;
+    cout<<"8. "<<"Logout"<<endl;
     //cout<<"4. "<<"Total fine for all books issued currently."<<endl;
     //cout<<"1. "<<"."<<endl;
     int num;
-    string title,author;
+    string isbn;
     cin>>num;
     switch(num){
         case 1:
@@ -640,28 +889,33 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
         case 3:
             cout<<"Find the book of your choice."<<endl;
             p.display_b(bookdb);
-            cout<<"Title of book : ";
-            cin>>title;
-            cout<<"Author of book : ";
-            cin>>author;
-            p.issue(title,author,bookdb);
+            cout<<"ISBN of book (use _ instead of space for separation): ";
+            cin>>isbn;
+            p.issue(isbn,bookdb);
             break;
         case 4:
             cout<<"Find the book of your choice."<<endl;
             p.display_b(bookdb);
-            cout<<"Title of book : ";
-            cin>>title;
-            cout<<"Author of book : ";
-            cin>>author;
-            if(p.issuable(title,author,bookdb)){
+            cout<<"ISBN of book (use _ instead of space for separation): ";
+            cin>>isbn;
+            if(p.issuable(isbn,bookdb)){
                 cout<<"Issuable."<<endl;
             }
             else
                 cout<<"Non-Issuable right now."<<endl;
             break;
         case 5:
-            home(database,profdb,studentdb,librariandb,bookdb);
+            p.return_book(bookdb);
             break;
+        case 6:
+            p.calculate_fine();
+            break;
+        case 7:
+            p.clear_fine_amount(bookdb);
+            break;
+        case 8:
+            home(database,profdb,studentdb,librariandb,bookdb);
+            return;
         default:
             cout<<"You had entered invalid number."<<endl;
             break;
@@ -677,7 +931,7 @@ void librarian_attributes(librarian &l, user_db &database,prof_db &profdb,studen
     cout<<"4. Add a user."<<endl;
     cout<<"5. Update a user."<<endl;
     cout<<"6. Delete a user."<<endl;
-    cout<<"7. Display all books"<<endl;
+    cout<<"7. Display all books."<<endl;
     cout<<"8. Display all users."<<endl;
     cout<<"9. Display books issued right now and by whom."<<endl;
     cout<<"10. Display books issued by a specific user."<<endl;
@@ -716,13 +970,13 @@ void librarian_attributes(librarian &l, user_db &database,prof_db &profdb,studen
         case 10:
             cout<<"Find the required user.";
             l.display_u(database);
-            cout<<"Enter user's id: ";
+            cout<<"Enter user's id (use _ instead of space for separation): ";
             cin>>id;
             l.user_book_list(id,bookdb,database);
             break;
         case 11:
             home(database,profdb,studentdb,librariandb,bookdb);
-            break;
+            return;
         default:
             cout<<"You had entered invalid number."<<endl;
             break;
@@ -733,7 +987,7 @@ void librarian_attributes(librarian &l, user_db &database,prof_db &profdb,studen
 
 void login(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db &librariandb,book_db& bookdb){
     string id,password;
-    cout<<"Enter id : ";
+    cout<<"Enter id (use _ instead of space for separation): ";
     cin>>id;
     if(!database.search(id)){
         cout<<"This ID doesn't exist. Try again or register."<<endl;
@@ -749,7 +1003,7 @@ void login(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db 
             return;
         }
     }
-    cout<<"Enter password : ";
+    cout<<"Enter password (use _ instead of space for separation): ";
     cin>>password;
     trav(database.users,i){
         if((*i).id==id && (*i).password!=password){
@@ -783,8 +1037,6 @@ void login(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db 
     }
 }
 
-
-
 void home(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db &librariandb,book_db& bookdb){
     cout<<"LIBRARY MANAGEMENT Home"<<endl;
     cout<<"Please enter the number corresponding to your requirement, eg 1 for login"<<endl;
@@ -794,7 +1046,7 @@ void home(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db &
     int num;
     cin>>num;
     switch(num){
-        case 1: 
+        case 1:
             login(database,profdb,studentdb,librariandb,bookdb);
             break;
         case 2:
@@ -816,9 +1068,9 @@ int main(){
     librarian_db librariandb;
     book_db bookdb;
     book* b;
-    b=new book(string("My diary"),string("Samar"),string("420420"),string("XYZ Publishers"));
+    b=new book(string("My_diary"),string("Samar"),string("420420"),string("XYZ_Publishers"));
     bookdb.books.pb(*b);
-    b=new book(string("ABC"),string("XYZ"),string("1111"),string("New Publishers"));
+    b=new book(string("ABC"),string("XYZ"),string("1111"),string("New_Publishers"));
     bookdb.books.pb(*b);
     home(database,profdb,studentdb,librariandb,bookdb);
     return 0;

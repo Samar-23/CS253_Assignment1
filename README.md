@@ -1,5 +1,5 @@
 # CS253_Assignment1
-##Library Management system
+Library Management system
 This assignment is part of CS253 course. 
 For running the code on terminal, you need to have gcc/g++ installed. Further steps are as follows:
 1. Make sure that your current working directory has the C++ file.

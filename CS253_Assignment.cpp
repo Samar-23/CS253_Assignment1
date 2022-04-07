@@ -57,7 +57,7 @@ ll diff(Date dt1, Date dt2){
     fl(i,0,dt2.m)
         n2 += monthDays[i];
     n2 += dt2.count_leap();
-    return n2 - n1;
+    return n2 - n1 - 1;
 }
 
 class user{
@@ -823,9 +823,11 @@ void student_attributes(student &s, user_db &database,prof_db &profdb,student_db
     switch(num){
         case 1:
             s.display_b(bookdb);
+            cout<<endl;
             break;
         case 2:
             s.display_list();
+            cout<<endl;
             break;
         case 3:
             cout<<"Find the book of your choice."<<endl;
@@ -833,6 +835,7 @@ void student_attributes(student &s, user_db &database,prof_db &profdb,student_db
             cout<<"ISBN of book (use _ instead of space for separation): ";
             cin>>isbn;
             s.issue(isbn,bookdb);
+            cout<<endl;
             break;
         case 4:
             cout<<"Find the book of your choice."<<endl;
@@ -847,14 +850,18 @@ void student_attributes(student &s, user_db &database,prof_db &profdb,student_db
             break;
         case 5:
             s.return_book(bookdb);
+            cout<<endl;
             break;
         case 6:
             s.calculate_fine();
+            cout<<endl;
             break;
         case 7:
             s.clear_fine_amount(bookdb);
+            cout<<endl;
             break;
         case 8:
+            cout<<endl;
             home(database,profdb,studentdb,librariandb,bookdb);
             return;
         default:
@@ -882,9 +889,11 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
     switch(num){
         case 1:
             p.display_b(bookdb);
+            cout<<endl;
             break;
         case 2:
             p.display_list();
+            cout<<endl;
             break;
         case 3:
             cout<<"Find the book of your choice."<<endl;
@@ -892,6 +901,7 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
             cout<<"ISBN of book (use _ instead of space for separation): ";
             cin>>isbn;
             p.issue(isbn,bookdb);
+            cout<<endl;
             break;
         case 4:
             cout<<"Find the book of your choice."<<endl;
@@ -903,17 +913,22 @@ void prof_attributes(prof &p, user_db &database,prof_db &profdb,student_db &stud
             }
             else
                 cout<<"Non-Issuable right now."<<endl;
+            
             break;
         case 5:
             p.return_book(bookdb);
+            cout<<endl;
             break;
         case 6:
             p.calculate_fine();
+            cout<<endl;
             break;
         case 7:
             p.clear_fine_amount(bookdb);
+            cout<<endl;
             break;
         case 8:
+            cout<<endl;
             home(database,profdb,studentdb,librariandb,bookdb);
             return;
         default:
@@ -942,30 +957,39 @@ void librarian_attributes(librarian &l, user_db &database,prof_db &profdb,studen
     switch(num){
         case 1:
             l.add_book(bookdb);
+            cout<<endl;
             break;
         case 2:
             l.update_book(bookdb);
+            cout<<endl;
             break;
         case 3:
             l.delete_book(bookdb);
+            cout<<endl;
             break;
         case 4:
             l.add_user(database,profdb,studentdb);
+            cout<<endl;
             break;
         case 5:
             l.update_user(database,profdb,studentdb,bookdb);
+            cout<<endl;
             break;
         case 6:
             l.delete_user(database,profdb,studentdb,bookdb);
+            cout<<endl;
             break;
         case 7:
             l.display_b(bookdb);
+            cout<<endl;
             break;
         case 8:
             l.display_u(database);
+            cout<<endl;
             break;
         case 9:
             l.user_book_mapping(bookdb,database);
+            cout<<endl;
             break;
         case 10:
             cout<<"Find the required user.";
@@ -973,8 +997,10 @@ void librarian_attributes(librarian &l, user_db &database,prof_db &profdb,studen
             cout<<"Enter user's id (use _ instead of space for separation): ";
             cin>>id;
             l.user_book_list(id,bookdb,database);
+            cout<<endl;
             break;
         case 11:
+            cout<<endl;
             home(database,profdb,studentdb,librariandb,bookdb);
             return;
         default:
@@ -1048,9 +1074,11 @@ void home(user_db &database,prof_db &profdb,student_db &studentdb,librarian_db &
     switch(num){
         case 1:
             login(database,profdb,studentdb,librariandb,bookdb);
+            cout<<endl;
             break;
         case 2:
             registration_lib(database,profdb,studentdb,librariandb,bookdb);
+            cout<<endl;
             break;
         case 3:
             return;
